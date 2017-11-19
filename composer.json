@@ -1,0 +1,20 @@
+{
+  "name": "byromul/sdl",
+  "description": "Store data loader",
+  "minimum-stability": "stable",
+  "license": "apache license 2.0",
+  "authors": [
+    {
+      "name": "Roman Yurasov",
+      "email": "byromul@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.22",
+    "guzzlehttp/guzzle": "6.3.0",
+    "symfony/console": "v3.3.13"
+  },
+  "autoload": {
+    "psr-4": {"App\\": "src/"}
+  }
+}

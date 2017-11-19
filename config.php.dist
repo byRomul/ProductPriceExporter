@@ -1,0 +1,8 @@
+<?php
+
+return [
+    'pathToCache' => __DIR__ . '/cache',
+    'pathToDatabase' => __DIR__ . /db.sqlite',
+    'contentLoaderTimeout' => 3,
+    'useContentLoaderCache' => true,
+];
