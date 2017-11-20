@@ -24,9 +24,11 @@ class DAL extends \App\DAL
      */
     public function create(Site $row)
     {
-        $query = $this->db->prepare('INSERT INTO sites (scheme, host) VALUES (:scheme, :host) ;');
+        $query = $this->db->prepare('INSERT INTO sites (scheme, host, charset, sitemap) VALUES (:scheme, :host, :charset, :sitemap) ;');
         $query->bindValue(':scheme', $row->getScheme(), SQLITE3_TEXT);
         $query->bindValue(':host', $row->getHost(), SQLITE3_TEXT);
+        $query->bindValue(':charset', $row->getCharset(), SQLITE3_TEXT);
+        $query->bindValue(':sitemap', $row->getSiteMap(), SQLITE3_TEXT);
         $query->execute();
         $row->setId($this->db->lastInsertRowID());
     }
@@ -39,7 +41,9 @@ class DAL extends \App\DAL
         $query = 'CREATE TABLE sites (
             id INTEGER PRIMARY KEY,
             scheme TEXT,
-            host TEXT
+            host TEXT,
+            charset TEXT,
+            sitemap TEXT
         )';
         return $this->db->exec($query);
     }
@@ -54,6 +58,8 @@ class DAL extends \App\DAL
         $row->setId($data['id']);
         $row->setScheme($data['scheme']);
         $row->setHost($data['host']);
+        $row->setCharset($data['charset']);
+        $row->setSiteMap($data['sitemap']);
         return $row;
     }
 }

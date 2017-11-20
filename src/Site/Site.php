@@ -2,9 +2,6 @@
 
 namespace App\Site;
 
-use App\App;
-use GuzzleHttp\Client;
-
 class Site
 {
     /**
@@ -19,6 +16,14 @@ class Site
      * @var string
      */
     private $host;
+    /**
+     * @var string
+     */
+    private $siteMap;
+    /**
+     * @var string
+     */
+    private $charset;
 
     /**
      * @return int
@@ -69,21 +74,34 @@ class Site
     }
 
     /**
-     * @return bool|string
+     * @return string
      */
-    public function getSiteMapUrl()
+    public function getSiteMap(): string
     {
-        $url = $this->getScheme() . '://' . $this->getHost() . '/robots.txt';
-        $client = new Client();
-        $result = $client->request('GET', $url, ['timeout' => App::instance()->config('contentLoaderTimeout')]);
-        if ($result->getStatusCode() === 200) {
-            $robots = $result->getBody();
-        } else {
-            return false;
-        }
-        if (preg_match('~^Sitemap: (.*)$~im', $robots, $match) === false || !isset($match[1])) {
-            return false;
-        }
-        return $match[1];
+        return $this->siteMap;
+    }
+
+    /**
+     * @param string $siteMap
+     */
+    public function setSiteMap(string $siteMap)
+    {
+        $this->siteMap = $siteMap;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCharset(): string
+    {
+        return $this->charset;
+    }
+
+    /**
+     * @param string $charset
+     */
+    public function setCharset(string $charset)
+    {
+        $this->charset = $charset;
     }
 }
