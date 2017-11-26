@@ -1,8 +1,8 @@
 # Product Price Exporter
 
-Export product prices from eCommerce sites to .csv file.
+Exports product prices from eCommerce sites to .csv file.
 
-Results file contains rows: product url, title, price.
+This file contains the following information: product url, title, price.
 
 # Usage
 
@@ -14,22 +14,22 @@ cp config.php.dist config.php
 vim config.php
 ```
 
-Make an example file in .csv format for teaching an application
+Make a sample file in .csv format to train the application
 ---
 
-Each line require follow information:
-- url to product, ex: https://store.com/product_1.html
-- title, ex: "Luxur super-duper product"
-- price, ex: 1.99
+Each line requires the following information:
+- product url, e.g.: https://store.com/product_1.html
+- title, e.g.: "Luxur super-duper product"
+- price, e.x.: 1.99
 
-Initialization an application
+Initialize the application
 ---
 
 ```text
 php cli.php init
 ```
 
-Teach an application
+Train the application
 ---
 
 ```text

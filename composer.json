@@ -1,6 +1,6 @@
 {
-  "name": "byromul/sdl",
-  "description": "Store data loader",
+  "name": "byromul/ProductPriceExporter",
+  "description": "Product Price Exporter",
   "minimum-stability": "stable",
   "license": "apache license 2.0",
   "authors": [
