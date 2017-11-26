@@ -20,6 +20,9 @@ class App
 
     private function __construct()
     {
+        if (!file_exists(__DIR__ . '/../config.php')) {
+            throw new \Exception('Need configure app: cp config.php.dist config.php');
+        }
         $this->config = include __DIR__ . '/../config.php';
         $this->dateTime = new \DateTime();
     }
@@ -27,7 +30,7 @@ class App
     /**
      * @return self
      */
-    public static function instance()
+    public static function instance(): self
     {
         if (is_null(static::$instance)) {
             static::$instance = new static();

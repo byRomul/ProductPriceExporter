@@ -2,6 +2,8 @@
 
 namespace App\Site;
 
+use App\Site\Pattern;
+
 class Site
 {
     /**
@@ -24,6 +26,10 @@ class Site
      * @var string
      */
     private $charset;
+    /**
+     * @var Pattern\Pattern[]
+     */
+    private $patterns;
 
     /**
      * @return int
@@ -103,5 +109,21 @@ class Site
     public function setCharset(string $charset)
     {
         $this->charset = $charset;
+    }
+
+    /**
+     * @return Pattern\Pattern[]
+     */
+    public function getPatterns(): array
+    {
+        if ($this->patterns === null) {
+            $patternDal = new Pattern\DAL();
+            $patterns = $patternDal->getPatternsBySiteId($this->id);
+            if ($patterns === false) {
+                $patterns = [];
+            }
+            $this->patterns = $patterns;
+        }
+        return $this->patterns;
     }
 }

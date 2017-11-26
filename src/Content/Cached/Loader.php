@@ -7,20 +7,6 @@ use App\App;
 class Loader extends \App\Content\Loader
 {
     /**
-     * @var string
-     */
-    protected $hash;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($url)
-    {
-        parent::__construct($url);
-        $this->hash = md5($url);
-    }
-
-    /**
      * @inheritdoc
      */
     public function getSource()
@@ -39,7 +25,7 @@ class Loader extends \App\Content\Loader
     /**
      * @return bool
      */
-    private function isCached()
+    private function isCached(): bool
     {
         return file_exists($this->getCacheFilePath());
     }
@@ -55,11 +41,12 @@ class Loader extends \App\Content\Loader
     /**
      * @return string
      */
-    private function getCacheFilePath()
+    private function getCacheFilePath(): string
     {
+        $hash = md5($this->url);
         $dirs = [0 => App::instance()->config('pathToCache')];
         $dirs[1] = $dirs[0] . '/' . App::instance()->now()->format('Ymd');
-        $dirs[2] = $dirs[1] . '/' . substr($this->hash, 0, 2);
+        $dirs[2] = $dirs[1] . '/' . substr($hash, 0, 2);
         if (!file_exists($dirs[2])) {
             foreach ($dirs as $dir) {
                 if (!file_exists($dir)) {
@@ -67,6 +54,6 @@ class Loader extends \App\Content\Loader
                 }
             }
         }
-        return $dirs[2] . '/' . $this->hash . '.html';
+        return $dirs[2] . '/' . $hash;
     }
 }

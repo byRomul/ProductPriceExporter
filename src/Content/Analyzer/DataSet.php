@@ -5,7 +5,7 @@ namespace App\Content\Analyzer;
 use App\Site\Site;
 use App\Example;
 
-class DataSet implements \Iterator
+class DataSet implements \Iterator, \Countable
 {
     /**
      * @var int
@@ -82,5 +82,13 @@ class DataSet implements \Iterator
     public function next()
     {
         $this->position++;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function count(): int
+    {
+        return count($this->examples);
     }
 }

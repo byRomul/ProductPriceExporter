@@ -7,6 +7,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\App;
 use App\Site;
+use App\Site\Pattern;
+use App\Product;
+use App\Product\Price;
 
 class Init extends Command
 {
@@ -18,9 +21,7 @@ class Init extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return bool
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -28,14 +29,19 @@ class Init extends Command
         if (file_exists($pathToDatabase)) {
             unlink($pathToDatabase);
         }
-        $dalSite = new Site\DAL();
-        if (!$dalSite->createTable()) {
-            $output->writeln('Fail to create table ' . Site\DAL::class);
-            return false;
+        $dals = [
+            new Site\DAL(),
+            new Pattern\DAL(),
+            new Product\DAL(),
+            new Price\DAL(),
+        ];
+        /** @var \App\DAL $dal */
+        foreach ($dals as $dal) {
+            if (!$dal->createTable()) {
+                $output->writeln('Fail to create table ' . $dal->tableName());
+                return 1;
+            }
         }
-
-        if (!file_exists(App::instance()->config('pathToCache'))) {
-            mkdir(App::instance()->config('pathToCache'));
-        }
+        return 0;
     }
 }

@@ -11,6 +11,10 @@
   ],
   "require": {
     "php": ">=7.0.22",
+    "ext-mbstring": "*",
+    "ext-sqlite3": "*",
+    "ext-pdo_sqlite": "*",
+    "ext-simplexml": "*",
     "guzzlehttp/guzzle": "6.3.0",
     "symfony/console": "v3.3.13"
   },

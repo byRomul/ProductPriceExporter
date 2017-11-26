@@ -2,7 +2,9 @@
 
 return [
     'pathToCache' => __DIR__ . '/cache',
-    'pathToDatabase' => __DIR__ . /db.sqlite',
+    'pathToDatabase' => __DIR__ . '/db.sqlite',
     'contentLoaderTimeout' => 3,
     'useContentLoaderCache' => true,
+    'maxPatternLen' => 32,
+    'maxInfoLen' => 256,
 ];

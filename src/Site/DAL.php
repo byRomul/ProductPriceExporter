@@ -10,7 +10,10 @@ class DAL extends \App\DAL
      */
     public function getSiteByHost(string $host)
     {
-        $query = $this->db->prepare('SELECT * FROM sites WHERE host = :host ;');
+        $sql = sprintf('SELECT *
+            FROM %s
+            WHERE host = :host ;', $this->tableName());
+        $query = $this->db->prepare($sql);
         $query->bindValue(':host', $host, SQLITE3_TEXT);
         $data = $query->execute()->fetchArray(SQLITE3_ASSOC);
         if ($data !== false) {
@@ -20,11 +23,32 @@ class DAL extends \App\DAL
     }
 
     /**
+     * @return Site[]|bool
+     */
+    public function getAll()
+    {
+        $sql = sprintf('SELECT *
+            FROM %s ;', $this->tableName());
+        $query = $this->db->prepare($sql);
+        $rows = $query->execute();
+        if ($rows->numColumns()) {
+            $result = [];
+            while ($row = $rows->fetchArray(SQLITE3_ASSOC)) {
+                $result[] = $this->decorate($row);
+            }
+            return $result;
+        }
+        return false;
+    }
+
+    /**
      * @param Site $row
      */
     public function create(Site $row)
     {
-        $query = $this->db->prepare('INSERT INTO sites (scheme, host, charset, sitemap) VALUES (:scheme, :host, :charset, :sitemap) ;');
+        $sql = sprintf('INSERT INTO %s (scheme, host, charset, sitemap)
+            VALUES (:scheme, :host, :charset, :sitemap) ;', $this->tableName());
+        $query = $this->db->prepare($sql);
         $query->bindValue(':scheme', $row->getScheme(), SQLITE3_TEXT);
         $query->bindValue(':host', $row->getHost(), SQLITE3_TEXT);
         $query->bindValue(':charset', $row->getCharset(), SQLITE3_TEXT);
@@ -38,14 +62,22 @@ class DAL extends \App\DAL
      */
     public function createTable(): bool
     {
-        $query = 'CREATE TABLE sites (
+        $sql = sprintf('CREATE TABLE %s (
             id INTEGER PRIMARY KEY,
             scheme TEXT,
             host TEXT,
             charset TEXT,
             sitemap TEXT
-        )';
-        return $this->db->exec($query);
+        ) ;', $this->tableName());
+        return $this->db->exec($sql);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function tableName(): string
+    {
+        return 'site';
     }
 
     /**

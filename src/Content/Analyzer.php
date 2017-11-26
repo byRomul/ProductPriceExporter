@@ -8,37 +8,43 @@ use App\Content\Analyzer\DataSet;
 
 class Analyzer
 {
-    const PATTERN_MAX_LEN = 5;
-
     /**
      * @var DataSet
      */
     private $dataSet;
+    /**
+     * @var int
+     */
+    private $maxPatternLen = 1000;
 
     /**
      * @param DataSet $dataSet
      */
-    public function __construct($dataSet)
+    public function __construct(DataSet $dataSet)
     {
         $this->dataSet = $dataSet;
+        $this->maxPatternLen = App::instance()->config('maxPatternLen');
     }
 
-    public function research()
+    /**
+     * @return array
+     */
+    public function research(): array
     {
         $site = $this->dataSet->getSite();
+        $patterns = [];
+        $patternCounters = [];
         foreach ($this->dataSet as $example) {
             $loader = $this->getLoader($example->getUrl());
             $source = $loader->getSource();
-
             $tasks = [
                 [
                     'find' => $example->getTitle(),
-                    'data' => [],
+                    'name' => 'title',
                 ],
-
                 [
                     'find' => $example->getPrice(),
-                    'data' => [],
+                    'name' => 'price',
                 ],
             ];
             foreach ($tasks as &$task) {
@@ -47,22 +53,41 @@ class Analyzer
                 $findLen = mb_strlen($find, $site->getCharset());
                 $sourceLen = mb_strlen($source, $site->getCharset());
                 while (($pos = mb_strpos($source, $find, $pos, $site->getCharset())) !== false) {
-                    $leftPattern = $this->findPattern($site, $source, $sourceLen, $pos, true);
-                    if ($leftPattern !== '') {
-                        $rightPattern = $this->findPattern($site, $source, $sourceLen, $pos + $findLen, false);
-                        if ($rightPattern !== '') {
-                            $task['data'][] = [
-                                'pos' => $pos,
-                                'leftPattern' => $leftPattern,
-                                'rightPattern' => $rightPattern,
-                            ];
-                            print_r($task);
+                    $left = $this->findPattern($site, $source, $sourceLen, $pos, true);
+                    if ($left !== '') {
+                        $right = $this->findPattern($site, $source, $sourceLen, $pos + $findLen, false);
+                        if ($right !== '') {
+                            $index = md5($left . '§' . $right);
+                            if (!isset($patternCounters[$task['name']][$index])) {
+                                $patternCounters[$task['name']][$index] = 1;
+                            } else {
+                                $patternCounters[$task['name']][$index]++;
+                            }
+                            if (!isset($patterns[$task['name']][$index])) {
+                                $patterns[$task['name']][$index] = [
+                                    'pos' => $pos,
+                                    'name' => $task['name'],
+                                    'left' => $left,
+                                    'right' => $right,
+                                ];
+                            }
                         }
                     }
                     $pos++;
                 }
             }
         }
+        $result = [];
+        if (count($patterns)) {
+            foreach ($patterns as $name => $data) {
+                foreach ($data as $index => $pattern) {
+                    if ($patternCounters[$name][$index] === count($this->dataSet)) {
+                        $result[$name] = $pattern;
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     /**
@@ -81,7 +106,7 @@ class Analyzer
         } else {
             $sidePos = $pos;
         }
-        if ($sidePos < 0 || $sidePos > $sourceLen || $len > self::PATTERN_MAX_LEN) {
+        if ($sidePos < 0 || $sidePos > $sourceLen || $len > $this->maxPatternLen) {
             return '';
         }
         $pattern = mb_substr($source, $sidePos, $len, $site->getCharset());

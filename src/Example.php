@@ -21,7 +21,7 @@ class Example
 
     /**
      * @param array $data
-     * @return Example
+     * @return self
      * @throws \Exception
      */
     public static function build(array $data): self
